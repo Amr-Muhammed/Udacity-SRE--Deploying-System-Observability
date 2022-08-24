@@ -1,0 +1,19 @@
+  - job_name: 'node_exporter'
+    static_configs:
+      - targets: ['ec2-3-23-38-159.us-east-2.compute.amazonaws.com:9100'] # ec2-instance-AWS-node-exporter-port
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ["localhost:9090"]
+  - job_name: blackbox
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets: ['ec2-3-23-38-159.us-east-2.compute.amazonaws.com:9115'] # ec2-instance-AWS-blackbox-exporter-port
+    relabel_configs:
+    - source_labels: [__address__]
+      target_label: __param_target
+    - source_labels: [__param_target]
+      target_label: instance
+    - target_label: __address__
+      replacement: prometheus-blackbox-exporter.monitoring:9115
